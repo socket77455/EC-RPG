@@ -1,0 +1,11 @@
+# SA:MP server related files
+*.dll
+*.exe
+*.amx
+server_log.txt
+server.cfg
+crashinfo.txt
+server-readme.txt
+npcmodes/
+pawno/
+scriptfiles/
