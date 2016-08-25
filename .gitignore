@@ -9,3 +9,5 @@ server-readme.txt
 npcmodes/
 pawno/
 scriptfiles/
+*.asm
+gamemodes/testing.pwn
