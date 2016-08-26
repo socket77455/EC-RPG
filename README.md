@@ -9,6 +9,9 @@ Everybody is free to participate in the development of the gamemode. Please file
 - Code made by other developers is credited where the code is used
 - See contributors list
 
+#Prerequisites
+Zeex's PAWN compiler: https://github.com/Zeex/pawn
+
 # GPL licensed
 The GPL license notice is included at the top of every file:
 ```
