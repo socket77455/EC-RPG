@@ -13,3 +13,4 @@ scriptfiles/
 gamemodes/testing.pwn
 gamemodes/test-bytes.pwn
 gamemodes/test.pwn
+include/
