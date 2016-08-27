@@ -299,7 +299,7 @@ stock SendTaggedMessageToAdmins(level, msg_type, fmat[], va_args<>) {
 	return true;
 }
 
-stock IsNumeric(const str[]) {
+IsNumeric(const str[]) {
 
 	for(new i = 0, l = strlen(str); i != l; i ++) {
 
@@ -314,7 +314,7 @@ stock IsNumeric(const str[]) {
 IsCompletelyNumeric(const str[]) {
 
 	new
-		count;
+		count = 0;
 
 	for(new i = 0, l = strlen(str); i != l; i++) {
 
@@ -323,7 +323,7 @@ IsCompletelyNumeric(const str[]) {
 			count++;
 		}
 	}
-	if(count > (strlen(str) / 2)) {
+	if(count >= (strlen(str) / 2)) {
 
 		return true;
 	}
@@ -336,7 +336,7 @@ IsValidPassword(const password[]) {
 
 		switch(password[i]) {
 
-			case '0'..'9', 'A'..'Z', 'a'..'z', '!', '?', ')', '(', '*': continue;
+			case '0'..'9', 'A'..'Z', 'a'..'z': continue;
 			default: return false;
 		}
 	}
