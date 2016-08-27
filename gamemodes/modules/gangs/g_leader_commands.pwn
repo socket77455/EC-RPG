@@ -81,7 +81,7 @@ Gang_InvitePlayer(playerid, inviter, gang_id) {
 	SendTaggedMessageToPlayer(playerid, TYPE_INFO, "To accept the invitation, use /acceptinvite. To decline the invitation, use /declineinvite.");
 }
 
-CMD:gacceptinvite(playerid) {
+CMD:acceptinvite(playerid) {
 
 	if(!BitFlag_Get(PlayerFlags[playerid], epf_InvitedToGang)) {
 
@@ -107,7 +107,7 @@ CMD:gacceptinvite(playerid) {
 	return true;
 }
 
-CMD:gdeclineinvite(playerid) {
+CMD:declineinvite(playerid) {
 
 	if(!BitFlag_Get(PlayerFlags[playerid], epf_InvitedToGang)) {
 
@@ -191,6 +191,7 @@ CMD:adjustgang(playerid, params[]) {
 
 		return SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "You may not use this command.");
 	}
+	BitFlag_Off(PlayerFlags[playerid], epf_EditingOtherGang);
 	if(BitFlag_Get(PlayerFlags[playerid], epf_GangModerator)) {
 
 		new
@@ -210,14 +211,16 @@ CMD:adjustgang(playerid, params[]) {
 
 				return SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "The gang you entered is invalid.");
 			}
+			BitFlag_On(PlayerFlags[playerid], epf_EditingOtherGang);
 			Player[playerid][epd_AdjustingGangID] = gang_id;
 		}
 	}
 	if(BitFlag_Get(PlayerFlags[playerid], epf_GangLeader)) {
 
-		Player[playerid][epd_AdjustingGangID] = INVALID_GANG_ID;
+		BitFlag_Off(PlayerFlags[playerid], epf_EditingOtherGang);
+		Player[playerid][epd_AdjustingGangID] = Player[playerid][epd_GangMember];
 	}
-	Gang_AdjustMenu(playerid, Player[playerid][epd_AdjustingGangID]);
+	Gang_AdjustMenu(playerid);
 	return true;
 }
 
@@ -236,11 +239,11 @@ Dialog:dia_AdjustGang(playerid, response, listitem, inputtext[]) {
 			}
 			case 1: { // Change rank name
 
-
+				Gang_Query_LoadAllRanks(playerid, gang_id);
 			}
 			case 2: { // ONLY FOR GANG MODERATORS: Change gang name
 
-
+				Dialog_Show(playerid, dia_ChangeGangName, DIALOG_STYLE_INPUT, SERVER_NAME" - Adjust gang name", "Enter the new gang name:", "Continue", "Back");
 			}
 		}
 	}
@@ -249,9 +252,29 @@ Dialog:dia_AdjustGang(playerid, response, listitem, inputtext[]) {
 
 Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 
+	/*
+	*
+	*	- If the player is a moderator and a gang leader and he is editing his own gang:
+	*		* Set his rank
+	*		* Save the data
+	*
+	*	- If the player is just a gang leader, gang_id will automatically be equal to INVALID_GANG_ID:
+	*		* Set his rank
+	*		* Save the data
+	*
+	*	- If the player is a gang moderator and he is editing someone else's gang:
+	*		* If the leader is online:
+	*			- Set his rank
+	*			- Save his data
+	*
+	*		* else:
+	*			- Save his data using [egd_LeaderID]
+	*
+	*/
+
 	if(!response) {
 
-		Gang_AdjustMenu(playerid, Player[playerid][epd_AdjustingGangID]);
+		Gang_AdjustMenu(playerid);
 	}
 	new
 		_ranks = strval(inputtext);
@@ -265,11 +288,17 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 		gang_id = (Player[playerid][epd_AdjustingGangID] != INVALID_GANG_ID) ? (Player[playerid][epd_AdjustingGangID]) : (Player[playerid][epd_GangMember]),
 		query[50];
 
-	if(BitFlag_Get(PlayerFlags[playerid], epf_GangLeader) && gang_id == INVALID_GANG_ID) {
+	if(BitFlag_Get(PlayerFlags[playerid], epf_GangLeader) && !BitFlag_Get(PlayerFlags[playerid], epf_EditingOtherGang)) {
 
 		Player[playerid][epd_GangRank] = _ranks;
+		mysql_format(handle_id, query, sizeof(query), "UPDATE players SET GangRank = %d WHERE ID = %d", _ranks, Player[playerid][epd_ID]);
+		mysql_tquery(handle_id, query, "", "");
 	}
 	else {
+
+		// Review this code:
+		new
+			bool:_online = false;
 
 		foreach(new i : Player) {
 
@@ -279,9 +308,33 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 
 				mysql_format(handle_id, query, sizeof(query), "UPDATE players SET GangRank = %d WHERE ID = %d", _ranks, Player[i][epd_ID]);
 				mysql_tquery(handle_id, query, "", "");
+
+				_online = true;
 				break;
 			}
 		}
+		if(!_online) {
+
+			mysql_format(handle_id, query, sizeof(query), "UPDATE players SET GangRank = %d WHERE ID = %d", _ranks, Gang[gang_id][egd_LeaderID]);
+			mysql_tquery(handle_id, query, "", "");
+		}
+		// End of review
+	}
+	
+	if(_ranks < Gang[gang_id][egd_Ranks]) {
+
+		mysql_format(handle_id, query, sizeof(query), "DELETE FROM gangs_ranks WHERE RankID > %d", _ranks);
+		mysql_tquery(handle_id, query, "", "");
+	}
+	else {
+
+		// Review this code:
+		for(new i = (Gang[gang_id][egd_Ranks] + 1), j = _ranks; i <= j; i++) {
+
+			mysql_format(handle_id, query, sizeof(query), "INSERT INTO gangs_ranks (`ID`, `RankID`, `RankName`) VALUES (%d, %d, 'placeholder_name')", Gang[gang_id][egd_ID], i);
+			mysql_tquery(handle_id, query, "", "");
+		}
+		// End of review
 	}
 	Gang[gang_id][egd_Ranks] = _ranks;
 
@@ -289,15 +342,111 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 	mysql_tquery(handle_id, query, "", "");
 
 	SendTaggedMessageToPlayer(playerid, TYPE_INFO, "You have successfully changed the maximum amount of ranks to %d", _ranks);
-	Gang_AdjustMenu(playerid, Player[playerid][epd_AdjustingGangID]);
+	Gang_AdjustMenu(playerid);
 	return true;
 }
 
-Gang_AdjustMenu(playerid, gangid = INVALID_GANG_ID) {
+Gang_Query_LoadAllRanks(playerid, gang_id) {
 
-	if(gangid == INVALID_GANG_ID) {
+	new
+		query[42];
+
+	mysql_format(handle_id, query, sizeof(query), "SELECT * FROM gangs_ranks WHERE ID = %d", Gang[gang_id][egd_ID]);
+	mysql_tquery(handle_id, query, "Gang_LoadAllRanks", "ii", playerid, gang_id);
+	return true;
+}
+
+forward Gang_LoadAllRanks(playerid, gang_id);
+public Gang_LoadAllRanks(playerid, gang_id) {
+
+	new
+		rankList[(39 * MAX_GANG_RANKS)],
+		formattedString[39],
+		rankid,
+		rankname[MAX_GANG_RANK_NAME];
+
+	strcat(rankList, "Rank ID\tRank Name\n");
+	for(new i = 0, j = cache_get_row_count(); i < j; i ++) {
+
+		rankid = cache_get_row_int(i, 1);
+		cache_get_row(i, 2, rankname, handle_id, MAX_GANG_RANK_NAME);
+
+		format(formattedString, sizeof(formattedString), "%d\t%s\n", rankid, rankname);
+		strcat(rankList, formattedString);
+	}
+	return Dialog_Show(playerid, dia_ChangeRankName, DIALOG_STYLE_TABLIST_HEADERS, SERVER_NAME" - Adjust rank names", rankList, "Select", "Back");
+}
+
+Dialog:dia_ChangeRankName(playerid, response, listitem, inputtext[]) {
+
+	if(!response) {
+
+		return Gang_AdjustMenu(playerid);
+	}
+	// Review this code:
+	if(!strlen(inputtext)) {
+		SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "You have to enter a rank name.");
+		return Gang_Query_LoadAllRanks(playerid, Player[playerid][epd_AdjustingGangID]);
+	}
+	if(IsCompletelyNumeric(inputtext)) {
+
+		SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "The rank name should not have more digits than letters.");
+		return Gang_Query_LoadAllRanks(playerid, Player[playerid][epd_AdjustingGangID]);
+	}
+
+	new
+		gang_id = Player[playerid][epd_AdjustingGangID];
+
+	// Player[playerid][epd_EditingRank] = listitem;
+
+	format(GangRank[gang_id][listitem][egrd_RankName], MAX_GANG_RANK_NAME, "%s", inputtext);
+
+	new
+		query[110];
+
+	mysql_format(handle_id, query, sizeof(query), "UPDATE gangs_ranks SET RankName = '%e' WHERE ID = %d", GangRank[gang_id][listitem][egrd_RankName], Gang[gang_id][egd_ID]);
+	mysql_tquery(handle_id, query, "", "");
+
+	SendTaggedMessageToPlayer(playerid, TYPE_INFO, "You have successfully changed rank ID (%d)'s name to %s.", listitem, GangRank[gang_id][listitem][egrd_RankName]);
+	Gang_Query_LoadAllRanks(playerid, Player[playerid][epd_AdjustingGangID]);
+	// End review
+	return true;
+}
+
+Dialog:dia_ChangeGangName(playerid, response, listitem, inputtext[]) {
+
+	if(!response) {
+
+		return Gang_AdjustMenu(playerid);
+	}
+	if(!strlen(inputtext)) {
+		SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "You have to enter a gang name.");
+		return Dialog_Show(playerid, dia_ChangeGangName, DIALOG_STYLE_INPUT, SERVER_NAME" - Adjust gang name", "Enter the new gang name:", "Continue", "Back");
+	}
+	if(IsCompletelyNumeric(inputtext)) {
+
+		SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "The gang name should not have more digits than letters.");
+		return Dialog_Show(playerid, dia_ChangeGangName, DIALOG_STYLE_INPUT, SERVER_NAME" - Adjust gang name", "Enter the new gang name:", "Continue", "Back");
+	}
+
+	new
+		gang_id = Player[playerid][epd_AdjustingGangID];
+
+	format(Gang[gang_id][egd_Name], MAX_GANG_NAME, "%s", inputtext);
+
+	new
+		query[95];
+
+	mysql_format(handle_id, query, sizeof(query), "UPDATE gangs SET Name = '%e' WHERE ID = %d", Gang[gang_id][egd_Name], Gang[gang_id][egd_ID]);
+	mysql_tquery(handle_id, query, "", "");
+	return true;
+}
+
+Gang_AdjustMenu(playerid) {
+
+	if(!BitFlag_Get(PlayerFlags[playerid], epf_EditingOtherGang)) {
 
 		return Dialog_Show(playerid, dia_AdjustGang, DIALOG_STYLE_LIST, SERVER_NAME" - Adjust your gang", "Change maximum ranks\nChange rank name\n", "Select", "Quit");
 	}
-	Dialog_Show(playerid, dia_AdjustGang, DIALOG_STYLE_LIST, SERVER_NAME" - Adjust a gang", "Change maximum ranks\nChange rank name\nChange gang name", "Select", "Quit");
+	return Dialog_Show(playerid, dia_AdjustGang, DIALOG_STYLE_LIST, SERVER_NAME" - Adjust a gang", "Change maximum ranks\nChange rank name\nChange gang name", "Select", "Quit");
 }
