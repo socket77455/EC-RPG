@@ -120,8 +120,7 @@ CMD:login(playerid, params[]) {
 
 			case MAX_LOGIN_ATTEMPTS: {
 
-				SendTaggedMessageToPlayer(playerid, TYPE_ADMIN, "You have been kicked from the server, reason: exceeded login attempts.");
-				KickEx(playerid);
+				KickEx(playerid, "exceeded login attempts");
 			}
 			default: {
 
@@ -213,8 +212,9 @@ public Player_FinishedRegister(playerid) {
 *
 */
 
-KickEx(playerid) {
+KickEx(playerid, const reason[], kickerid = INVALID_PLAYER_ID) {
 
+	SendTaggedMessageToPlayer(playerid, TYPE_ADMIN, "%p has been kicked by the server by %s, reason: %s", playerid, ((kickerid == INVALID_PLAYER_ID) ? (Server[esd_AutomatedName]) : (Player[kickerid][epd_Username])), reason);
 	defer KickPlayer(playerid);
 }
 
@@ -222,5 +222,3 @@ timer KickPlayer[200](playerid) {
 
 	Kick(playerid);
 }
-
-

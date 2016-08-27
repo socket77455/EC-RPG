@@ -37,6 +37,32 @@
 
 /*
 *
+*		Guaranteed first call
+*
+*/
+
+public OnGameModeInit() {
+
+	GameMode_Initialise();
+
+	#if defined main_OnGameModeInit
+		return main_OnGameModeInit();
+	#else
+		return true;
+	#endif
+}
+#if defined _ALS_OnGameModeInit
+	#undef OnGameModeInit
+#else
+	#define _ALS_OnGameModeInit
+#endif
+#define OnGameModeInit main_OnGameModeInit
+#if defined main_OnGameModeInit
+	forward main_OnGameModeInit();
+#endif
+
+/*
+*
 *	Natives
 *
 */
@@ -80,21 +106,21 @@ native IsValidVehicle(vehicleid);
 #define KEY_PRESSED(%0)			(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
 
 	// Max values
-#define MAX_PLAYER_PASSWORD		65
-#define MAX_PLAYER_SALT			MAX_PLAYER_PASSWORD
-#define MAX_PLAYER_IP			16
-#define MAX_LOGIN_ATTEMPTS		5
-#define MAX_GANGS				10
-#define MAX_GANG_NAME			50
-#define MAX_GANG_RANKS			10
-#define	MAX_GANG_RANK_NAME		32
+#define MAX_PLAYER_PASSWORD			65
+#define MAX_PLAYER_SALT				MAX_PLAYER_PASSWORD
+#define MAX_PLAYER_IP				16
+#define MAX_LOGIN_ATTEMPTS			5
+#define MAX_GANGS					10
+#define MAX_GANG_NAME				50
+#define MAX_GANG_RANKS				10
+#define	MAX_GANG_RANK_NAME			32
+#define MAX_SERVER_AUTOMATED_NAME	20
 
 	// Invalid values
 #define INVALID_GANG_ID			65535
 
 	// Strings
 #define SERVER_NAME				"EC-RPG"
-
 
 	// Hex colours
 #define COLOR_POLICE_BLUE 		0x0076FFFF
@@ -145,7 +171,7 @@ new
 
 
 // Utility
-#include "utils\utils_string.pwn"
+#include "utils\util_string.pwn"
 
 // Data
 #include "modules\data.pwn"
@@ -158,3 +184,9 @@ new
 #include "modules\gangs\g_leader_commands.pwn"
 #include "modules\gangs\g_deletion.pwn"
 #include "modules\gangs\g_creation.pwn"
+
+GameMode_Initialise() {
+
+	// Eventually retrieve the name from the database
+	format(Server[esd_AutomatedName], MAX_SERVER_AUTOMATED_NAME, "The Server");
+}

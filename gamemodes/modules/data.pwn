@@ -23,6 +23,31 @@
 #define BitFlag_Off(%0,%1)            ((%0) &= ~(%1)) // Turn off a flag.
 #define BitFlag_Toggle(%0,%1)         ((%0) ^= (%1))  // Toggle a flag (swap true/false).
 
+/*
+*
+*	Server flags & data
+*
+*/
+
+/*enum E_SERVER_FLAGS:(<<= 1) {
+
+	esf_ChatEnabled = 1
+};
+new E_SERVER_FLAGS:ServerFlags;*/
+
+enum E_SERVER_DATA {
+
+	// Database
+	esd_AutomatedName[MAX_SERVER_AUTOMATED_NAME]
+};
+new Server[E_SERVER_DATA];
+
+/*
+*
+*	Player flags & data
+*
+*/
+
 enum E_PLAYER_FLAGS:(<<= 1) {
 	
 	epf_LoggedIn = 1,
@@ -30,7 +55,8 @@ enum E_PLAYER_FLAGS:(<<= 1) {
 	epf_Registered,
 	epf_GangModerator,
 	epf_GangLeader,
-	epf_InvitedToGang
+	epf_InvitedToGang,
+	epf_EditingOtherGang
 };
 new E_PLAYER_FLAGS:PlayerFlags[MAX_PLAYERS];
 
@@ -60,10 +86,17 @@ enum E_PLAYER_DATA {
 	epd_InviterOfTheGang,
 
 		// Gang moderation
-	epd_AdjustingGangID
+	epd_AdjustingGangID,
+	epd_EditingRank
 };
 new Player[MAX_PLAYERS][E_PLAYER_DATA];
 new ResetPlayer[E_PLAYER_DATA];
+
+/*
+*
+*	Gang flags & data
+*
+*/
 
 enum E_GANG_FLAGS:(<<= 1) {
 	
