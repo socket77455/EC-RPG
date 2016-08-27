@@ -11,3 +11,5 @@ pawno/
 scriptfiles/
 *.asm
 gamemodes/testing.pwn
+gamemodes/test-bytes.pwn
+gamemodes/test.pwn
