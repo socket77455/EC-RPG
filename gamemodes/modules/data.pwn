@@ -22,6 +22,7 @@
 #define BitFlag_On(%0,%1)             ((%0) |= (%1))  // Turn on a flag.
 #define BitFlag_Off(%0,%1)            ((%0) &= ~(%1)) // Turn off a flag.
 #define BitFlag_Toggle(%0,%1)         ((%0) ^= (%1))  // Toggle a flag (swap true/false).
+#define BitFlag_Set(%0,%1,%2)		  ((%2)?((%0)|=(%1)):((%0)&=~(%1)))	// Set a flag to whatever %3 evaluates to (true/false)
 
 /*
 *
@@ -131,6 +132,59 @@ enum E_GANG_RANK_DATA {
 };
 new GangRank[MAX_GANGS][MAX_GANG_RANKS][E_GANG_RANK_DATA];
 
+/*
+*
+*	Vehicle flags & data
+*
+*/
+
+enum E_VEHICLE_FLAGS:(<<= 1) {
+
+	evf_Exists = 1,
+
+	// Parameters
+	evf_Engine,
+	evf_Lights,
+	evf_Alarm,
+	evf_Lock,
+	evf_Hood,
+	evf_Trunk,
+	evf_Objective
+};
+new E_VEHICLE_FLAGS:VehicleFlags[MAX_VEHICLES];
+
+enum E_VEHICLE_DATA {
+
+	// Database
+
+		// Essentials
+	evd_VehicleID,
+	evd_OwnerID,
+	// evd_BusinessID,
+	evd_GangID,
+	// evd_FactionID,
+
+	Float:evd_PositionX,
+	Float:evd_PositionY,
+	Float:evd_PositionZ,
+	Float:evd_PositionA,
+	evd_Interior,
+	evd_VirtualWorld,
+
+	evd_Color1,
+	evd_Color2,
+
+	Float:evd_Health,
+
+	evd_DamagePanels,
+	evd_DamageDoors,
+	evd_DamageLights,
+	evd_DamageTires,
+
+	// Session data
+	evd_SessionID
+};
+new Vehicle[MAX_VEHICLES][E_VEHICLE_DATA];
 
 // Enums used solely to avoid ID collisions
 

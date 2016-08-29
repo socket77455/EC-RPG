@@ -347,3 +347,17 @@ randomEx(minnum = cellmin, maxnum = cellmax) {
 
 	return random(maxnum - minnum + 1) + minnum;
 }
+
+IntegerToBinary(value) {
+
+	new
+		str_IntToBin[32]; // 33 bits
+
+	format(str_IntToBin, sizeof(str_IntToBin), "%b", value);
+	return str_IntToBin;
+}
+
+BinaryToInteger(const str[]) {
+
+	return strval(str);	
+}

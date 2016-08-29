@@ -24,6 +24,15 @@
 *
 */
 
+/*
+*
+*	TO-DO:
+*		- Gang moderator command to create gang HQs
+*		- Individual rights for gangs/factions
+*		- Don't spawn vehicles when the owner hasn't been online for +-7 days
+*
+*/
+
 #include <a_samp>
 
 /*
