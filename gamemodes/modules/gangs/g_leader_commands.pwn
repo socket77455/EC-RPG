@@ -296,7 +296,6 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 	}
 	else {
 
-		// Review this code:
 		new
 			bool:_online = false;
 
@@ -318,7 +317,6 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 			mysql_format(handle_id, query, sizeof(query), "UPDATE players SET GangRank = %d WHERE ID = %d", _ranks, Gang[gang_id][egd_LeaderID]);
 			mysql_tquery(handle_id, query, "", "");
 		}
-		// End of review
 	}
 	
 	if(_ranks < Gang[gang_id][egd_Ranks]) {
@@ -328,13 +326,11 @@ Dialog:dia_ChangeMaxRanks(playerid, response, listitem, inputtext[]) {
 	}
 	else {
 
-		// Review this code:
 		for(new i = (Gang[gang_id][egd_Ranks] + 1), j = _ranks; i <= j; i++) {
 
 			mysql_format(handle_id, query, sizeof(query), "INSERT INTO gangs_ranks (`ID`, `RankID`, `RankName`) VALUES (%d, %d, 'placeholder_name')", Gang[gang_id][egd_ID], i);
 			mysql_tquery(handle_id, query, "", "");
 		}
-		// End of review
 	}
 	Gang[gang_id][egd_Ranks] = _ranks;
 
@@ -383,7 +379,6 @@ Dialog:dia_ChangeRankName(playerid, response, listitem, inputtext[]) {
 
 		return Gang_AdjustMenu(playerid);
 	}
-	// Review this code:
 	if(!strlen(inputtext)) {
 		SendTaggedMessageToPlayer(playerid, TYPE_ERROR, "You have to enter a rank name.");
 		return Gang_Query_LoadAllRanks(playerid, Player[playerid][epd_AdjustingGangID]);
@@ -409,7 +404,6 @@ Dialog:dia_ChangeRankName(playerid, response, listitem, inputtext[]) {
 
 	SendTaggedMessageToPlayer(playerid, TYPE_INFO, "You have successfully changed rank ID (%d)'s name to %s.", listitem, GangRank[gang_id][listitem][egrd_RankName]);
 	Gang_Query_LoadAllRanks(playerid, Player[playerid][epd_AdjustingGangID]);
-	// End review
 	return true;
 }
 
@@ -439,6 +433,8 @@ Dialog:dia_ChangeGangName(playerid, response, listitem, inputtext[]) {
 
 	mysql_format(handle_id, query, sizeof(query), "UPDATE gangs SET Name = '%e' WHERE ID = %d", Gang[gang_id][egd_Name], Gang[gang_id][egd_ID]);
 	mysql_tquery(handle_id, query, "", "");
+
+	SendTaggedMessageToPlayer(playerid, TYPE_INFO, "You have successfully changed the name of gang ID %d to %s.", ReturnActualGangID(gang_id), Gang[gang_id][egd_Name]);
 	return true;
 }
 
