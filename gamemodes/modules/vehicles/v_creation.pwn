@@ -19,7 +19,7 @@
 
 /*
 *
-*	gang module: creation.pwn
+*	vehicle module: creation.pwn
 *
 */
 

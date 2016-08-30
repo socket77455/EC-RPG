@@ -19,7 +19,7 @@
 
 /*
 *
-*	gang module: loading.pwn
+*	vehicle module: loading.pwn
 *
 */
 

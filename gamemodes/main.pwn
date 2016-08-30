@@ -110,9 +110,9 @@ native IsValidVehicle(vehicleid);
 */
 
 	// Macros
-#define KEY_HOLDING(%0)			((newkeys & (%0)) == (%0))
-#define KEY_RELEASED(%0)		(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
-#define KEY_PRESSED(%0)			(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#define KEY_HOLDING(%0)				((newkeys & (%0)) == (%0))
+#define KEY_RELEASED(%0)			(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+#define KEY_PRESSED(%0)				(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
 
 	// Max values
 #define MAX_PLAYER_PASSWORD			65
@@ -126,42 +126,42 @@ native IsValidVehicle(vehicleid);
 #define MAX_SERVER_AUTOMATED_NAME	20
 
 	// Invalid values
-#define INVALID_GANG_ID			65535
+#define INVALID_GANG_ID				65535
 
 	// Strings
-#define SERVER_NAME				"EC-RPG"
+#define SERVER_NAME					"EC-RPG"
 
 	// Hex colours
-#define COLOR_POLICE_BLUE 		0x0076FFFF
-#define	COLOR_BLUE				0x0097FFFF
-#define	COLOR_RED				0xE90002FF
-#define	COLOR_GREEN				0x00DE59FF
-#define COLOR_G_ACHAT			0x21DD00FF
-#define	COLOR_GREY				0x8C8C8CFF
-#define	COLOR_WHITE				0xFFFFFFFF
-#define	COLOR_BLACK				0x000000FF
-#define	COLOR_PURPLE			0x8068FFFF
-#define COLOR_ROLEPLAY			0x33CCFFAA
-#define COLOR_YELLOW			0xFFFF00AA
-#define COLOR_CYAN				0x00FFFFAA
-#define COLOR_PINK				0xFF4DFFFF
-#define COLOR_ORANGE			0xFFA500FF
-#define COLOR_PD_RADIO			0x0EEBEBFF
-#define COLOR_GLOBAL_PD_RADIO	0x6AAFEBFF
+#define COLOR_POLICE_BLUE 			0x0076FFFF
+#define	COLOR_BLUE					0x0097FFFF
+#define	COLOR_RED					0xE90002FF
+#define	COLOR_GREEN					0x00DE59FF
+#define COLOR_G_ACHAT				0x21DD00FF
+#define	COLOR_GREY					0x8C8C8CFF
+#define	COLOR_WHITE					0xFFFFFFFF
+#define	COLOR_BLACK					0x000000FF
+#define	COLOR_PURPLE				0x8068FFFF
+#define COLOR_ROLEPLAY				0x33CCFFAA
+#define COLOR_YELLOW				0xFFFF00AA
+#define COLOR_CYAN					0x00FFFFAA
+#define COLOR_PINK					0xFF4DFFFF
+#define COLOR_ORANGE				0xFFA500FF
+#define COLOR_PD_RADIO				0x0EEBEBFF
+#define COLOR_GLOBAL_PD_RADIO		0x6AAFEBFF
 
 	// Embedded colours
-#define	COL_BLUE				"{0097FF}"
-#define	COL_RED					"{E90002}"
-#define COL_ORANGE				"{FFAF00}"
-#define	COL_GREEN				"{00DE59}"
-#define	COL_GREY				"{8C8C8C}"
-#define	COL_WHITE				"{FFFFFF}"
-#define	COL_BLACK				"{000000}"
-#define	COL_PURPLE				"{8068FF}"
-#define COL_CYAN				"{00FFFF}"
-#define COL_YELLOW				"{FFFF00}"
-#define COL_PD_RADIO			"{0EEBEB}"
-#define COL_GLOBAL_PD_RADIO		"{6AAFEB}"
+#define	COL_BLUE					"{0097FF}"
+#define	COL_RED						"{E90002}"
+#define COL_ORANGE					"{FFAF00}"
+#define	COL_GREEN					"{00DE59}"
+#define	COL_GREY					"{8C8C8C}"
+#define	COL_WHITE					"{FFFFFF}"
+#define	COL_BLACK					"{000000}"
+#define	COL_PURPLE					"{8068FF}"
+#define COL_CYAN					"{00FFFF}"
+#define COL_YELLOW					"{FFFF00}"
+#define COL_PD_RADIO				"{0EEBEB}"
+#define COL_GLOBAL_PD_RADIO			"{6AAFEB}"
 
 /*
 *
@@ -193,6 +193,12 @@ new
 #include "modules\gangs\g_leader_commands.pwn"
 #include "modules\gangs\g_deletion.pwn"
 #include "modules\gangs\g_creation.pwn"
+
+// Vehicle modules
+#include "modules\vehicles\v_loading.pwn"
+//#include "modules\vehicles\v_commands.pwn"
+#include "modules\vehicles\v_creation.pwn"
+//#include "modules\vehicles\v_deletion.pwn"
 
 GameMode_Initialise() {
 
