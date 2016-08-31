@@ -22,7 +22,7 @@
 #define BitFlag_On(%0,%1)             ((%0) |= (%1))  // Turn on a flag.
 #define BitFlag_Off(%0,%1)            ((%0) &= ~(%1)) // Turn off a flag.
 #define BitFlag_Toggle(%0,%1)         ((%0) ^= (%1))  // Toggle a flag (swap true/false).
-#define BitFlag_Set(%0,%1,%2)		  ((%2)?((%0)|=(%1)):((%0)&=~(%1)))	// Set a flag to whatever %3 evaluates to (true/false)
+#define BitFlag_Set(%1,%2,%3)		  if(%3)((%1)|=(%2));else((%1)&=~(%2))
 
 /*
 *
@@ -57,7 +57,16 @@ enum E_PLAYER_FLAGS:(<<= 1) {
 	epf_GangModerator,
 	epf_GangLeader,
 	epf_InvitedToGang,
-	epf_EditingOtherGang
+	epf_EditingOtherGang,
+
+	// Individual rights
+	epf_Invite,
+	epf_Kick,
+	epf_Demote,
+	epf_ParkVehicle,
+	epf_ChangeName,
+	epf_ChangeMaxRanks,
+	epf_ChangeRankName
 };
 new E_PLAYER_FLAGS:PlayerFlags[MAX_PLAYERS];
 
@@ -141,6 +150,7 @@ new GangRank[MAX_GANGS][MAX_GANG_RANKS][E_GANG_RANK_DATA];
 enum E_VEHICLE_FLAGS:(<<= 1) {
 
 	evf_Exists = 1,
+	evf_Temporary,
 
 	// Parameters
 	evf_Engine,
@@ -158,7 +168,8 @@ enum E_VEHICLE_DATA {
 	// Database
 
 		// Essentials
-	evd_VehicleID,
+	evd_ID,
+	evd_Model,
 	evd_OwnerID,
 	// evd_BusinessID,
 	evd_GangID,
@@ -185,6 +196,7 @@ enum E_VEHICLE_DATA {
 	evd_SessionID
 };
 new Vehicle[MAX_VEHICLES][E_VEHICLE_DATA];
+new ResetVehicle[E_VEHICLE_DATA];
 
 // Enums used solely to avoid ID collisions
 
