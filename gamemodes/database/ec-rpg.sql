@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS `vehicles` (
 	`OwnerID`			INT(24)			NOT NULL			DEFAULT '65535',
 	`GangID`			INT(24)			NOT NULL			DEFAULT '65535',
 
+	`Model`				INT(3)			NOT NULL,
 	`Health`			FLOAT(24)		NOT NULL			DEFAULT '1000.0',
 
 	PRIMARY KEY(`ID`)
@@ -146,10 +147,10 @@ ALTER TABLE `vehicles_parameters` ADD FOREIGN KEY (`ID`) REFERENCE `vehicles`(`I
 CREATE TABLE IF NOT EXISTS `vehicles_damage` (
 
 	`ID`				INT(24)			NOT NULL,
-	`DamagePanels`		INT(4)			NOT NULL			DEFAULT '0',
-	`DamageDoors`		INT(4)			NOT NULL			DEFAULT '0',
-	`DamageLights`		INT(4)			NOT NULL			DEFAULT '0',
-	`DamageTires`		INT(4)			NOT NULL			DEFAULT '0',
+	`DamagePanels`		BIT(4)			NOT NULL			DEFAULT '0000',
+	`DamageDoors`		BIT(4)			NOT NULL			DEFAULT '0000',
+	`DamageLights`		BIT(4)			NOT NULL			DEFAULT '0000',
+	`DamageTires`		BIT(4)			NOT NULL			DEFAULT '0000',
 
 	PRIMARY KEY(`ID`)
 ) ENGINE = InnoDB DEFAULT CHARSET = latin1 AUTO_INCREMENT = 1;

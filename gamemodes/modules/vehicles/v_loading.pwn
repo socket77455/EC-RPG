@@ -38,6 +38,8 @@ public Vehicle_RetrieveInitRowData() {
 
 	for(new i = 0, j = cache_get_row_count(); i < j; i ++) {
 
+		VehicleFlags[i] = E_VEHICLE_FLAGS:0;
+
 		BitFlag_On(VehicleFlags[i], evf_Exists);
 
 		Vehicle[i][evd_ID] = cache_get_row_int(i, 0);
@@ -46,7 +48,7 @@ public Vehicle_RetrieveInitRowData() {
 
 		Vehicle[i][evd_Health] = cache_get_row_float(i, 5);
 
-		Vehicle[i][SessionID] = i;
+		Vehicle[i][evd_SessionID] = i;
 
 		mysql_format(handle_id, query, sizeof(query), "SELECT * FROM vehicles_positions WHERE ID = %d", Vehicle[i][evd_ID]);
 		mysql_tquery(handle_id, query, "Vehicle_LoadPosition", "i", i);
@@ -95,13 +97,13 @@ public Vehicle_LoadParameters(vehicle_id) {
 
 	for(new i = 0, j = cache_get_row_count(); i < j; i ++) {
 
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Engine, cache_get_row_int(i, 1));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Lights, cache_get_row_int(i, 2));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Alarm, cache_get_row_int(i, 3));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Lock, cache_get_row_int(i, 4));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Hood, cache_get_row_int(i, 5));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Trunk, cache_get_row_int(i, 6));
-		BitFlag_Set(VehicleFlags[vehicle_id], evf_Objective, cache_get_row_int(i, 7));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Engine, (cache_get_row_int(i, 1)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Lights, (cache_get_row_int(i, 2)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Alarm, (cache_get_row_int(i, 3)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Lock, (cache_get_row_int(i, 4)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Hood, (cache_get_row_int(i, 5)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Trunk, (cache_get_row_int(i, 6)));
+		BitFlag_Set(VehicleFlags[vehicle_id], evf_Objective, (cache_get_row_int(i, 7)));
 	}
 	return true;
 }
@@ -118,28 +120,3 @@ public Vehicle_LoadDamage(vehicle_id) {
 	}
 	return true;
 }
-
-/*ConvertIntToBinary(intValue) {
-
-	// Code
-}
-
-from pythonds.basic.stack import Stack
-
-def divideBy2(decNumber):
-    remstack = Stack()
-
-    while decNumber > 0:
-        rem = decNumber % 2
-        remstack.push(rem)
-        decNumber = decNumber // 2
-
-    binString = ""
-    while not remstack.isEmpty():
-        binString = binString + str(remstack.pop())
-
-    return binString
-
-print(divideBy2(2))*/
-
-
