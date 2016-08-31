@@ -72,14 +72,6 @@ public OnGameModeInit() {
 
 /*
 *
-*	Natives
-*
-*/
-
-native IsValidVehicle(vehicleid);
-
-/*
-*
 *	Libraries
 *
 */
@@ -181,12 +173,14 @@ new
 
 // Utility
 #include "utils\util_string.pwn"
+#include "utils\util_vehicles.pwn"
 
 // Data
 #include "modules\data.pwn"
 
 // Player modules
 #include "modules\player\connection.pwn"
+#include "modules\player\rights.pwn"
 
 // Gang modules
 #include "modules\gangs\g_loading.pwn"
@@ -198,7 +192,7 @@ new
 #include "modules\vehicles\v_loading.pwn"
 //#include "modules\vehicles\v_commands.pwn"
 #include "modules\vehicles\v_creation.pwn"
-//#include "modules\vehicles\v_deletion.pwn"
+#include "modules\vehicles\v_deletion.pwn"
 
 GameMode_Initialise() {
 
